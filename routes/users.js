@@ -65,4 +65,44 @@ routes.post(url, formatName, (req, res) => {
     });
 });
 
+// DELETE USER
+routes.delete(urlByUser, (req, res) => {
+  const { id } = req.params;
+  db.remove(id)
+    .then(count => {
+      if (count) {
+        res.status(200).json({ message: 'User successfully deleted' });
+      } else {
+        res.status(404).json({ message: 'No user exists with this id' });
+      }
+    })
+    .catch(() => {
+      res.status(500).json({ message: 'The user could not be removed' });
+    });
+});
+
+// UPDATE USER
+routes.put(urlByUser, (req, res) => {
+  const { id } = req.params;
+  const user = req.body;
+
+  if (user.name) {
+    db.update(id, user)
+      .then(count => {
+        if (count) {
+          res.status(200).json({ message: 'User successfully updated' });
+        } else {
+          res.status(404).json({ message: 'No user exists with  this id' });
+        }
+      })
+      .catch(() => {
+        res.status(500).json({ message: 'The user could not be removed' });
+      });
+  } else {
+    res
+      .status(404)
+      .json({ message: 'Please provide an updated name to change this user' });
+  }
+});
+
 module.exports = routes;
