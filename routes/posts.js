@@ -14,7 +14,11 @@ routes.get(url, (req, res) => {
   dbPosts
     .get()
     .then(posts => {
-      res.status(200).json(posts);
+      if (posts.length > 0) {
+        res.status(200).json(posts);
+      } else {
+        res.status(200).json({ message: 'There are no posts yet!' });
+      }
     })
     .catch(() => {
       res.status(500).json({ message: 'The posts could not be retrieved' });
@@ -76,17 +80,22 @@ routes.post(url, (req, res) => {
 routes.put(urlByPost, (req, res) => {
   const { id } = req.params;
   const post = req.body;
+
   if (post.text || post.user_id) {
-    dbPosts.update(id, post)
+    dbPosts
+      .update(id, post)
       .then(count => {
         if (count) {
-          res.status(200).json({ message: 'Post succesffuly updated' });
+          res.status(200).json({ message: 'Post succesfully updated' });
         } else {
           res.status(404).json({ message: 'This post does not exist' });
         }
       })
       .catch(() => {
-        res.status(500).json({ message: 'The post could not be updated' });
+        res.status(500).json({
+          message:
+            'The user youre trying to associate with this post does not exist',
+        });
       });
   } else {
     res
