@@ -2,6 +2,8 @@ const express = require('express');
 const routes = express.Router();
 
 const db = require('../data/helpers/userDb');
+const { formatName } = require('../middleware');
+
 const url = '/api/users';
 const urlByUser = '/api/users/:id';
 const postsByUser = '/api/users/:id/posts';
@@ -48,6 +50,18 @@ routes.get(postsByUser, (req, res) => {
     })
     .catch(() => {
       res.status(500).json({ message: 'The users could not be retrieved' });
+    });
+});
+
+// ADD USER
+routes.post(url, formatName, (req, res) => {
+  const user = req.body;
+  db.insert(user)
+    .then(newUser => {
+      res.status(200).json(newUser);
+    })
+    .catch(() => {
+      res.status(500).json({ message: 'The user could not be added' });
     });
 });
 
