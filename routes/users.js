@@ -4,6 +4,7 @@ const routes = express.Router();
 const db = require('../data/helpers/userDb');
 const url = '/api/users';
 const urlByUser = '/api/users/:id';
+const postsByUser = '/api/users/:id/posts';
 
 routes.use(express.json());
 
@@ -26,13 +27,28 @@ routes.get(urlByUser, (req, res) => {
       if (user) {
         res.status(200).json(user);
       } else {
-        res
-          .status(404)
-          .json({ message: 'The user with specified ID does not exist' });
+        res.status(404).json({ message: 'No user exists with this id' });
       }
     })
     .catch(() => {
       res.status(500).json({ message: 'The users could not be retrieved' });
     });
 });
+
+// GET ALL POSTS BY A USER
+routes.get(postsByUser, (req, res) => {
+  const { id } = req.params;
+  db.getUserPosts(id)
+    .then(posts => {
+      if (posts.length > 0) {
+        res.status(200).json(posts);
+      } else {
+        res.status(404).json({ message: 'No user exists with this id' });
+      }
+    })
+    .catch(() => {
+      res.status(500).json({ message: 'The users could not be retrieved' });
+    });
+});
+
 module.exports = routes;
