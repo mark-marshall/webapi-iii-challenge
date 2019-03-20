@@ -2,6 +2,7 @@ const express = require('express');
 const routes = express.Router();
 
 const db = require('../data/helpers/postDb');
+const dbUsers = require('../data/helpers/userDb');
 
 const url = '/api/posts';
 const urlByPost = '/api/posts/:id';
@@ -32,6 +33,22 @@ routes.get(urlByPost, (req, res) => {
     })
     .catch(() => {
       res.status(500).json({ message: 'The post could not be retrieved' });
+    });
+});
+
+// DELETE POST
+routes.delete(urlByPost, (req, res) => {
+  const { id } = req.params;
+  db.remove(id)
+    .then(count => {
+      if (count === 1) {
+        res.status(200).json({ message: 'Post successfully deleted' });
+      } else {
+        res.status(404).jsoon({ messahe: 'No post exists with this id' });
+      }
+    })
+    .catch(() => {
+      res.status(500).json({ message: 'The post could not be deleted' });
     });
 });
 
