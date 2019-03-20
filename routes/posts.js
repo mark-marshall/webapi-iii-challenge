@@ -45,7 +45,7 @@ routes.delete(urlByPost, (req, res) => {
     .remove(id)
     .then(count => {
       if (count === 1) {
-        res.status(200).json({ message: 'Post successfully deleted' });
+        res.status(204).json({ message: 'Post successfully deleted' });
       } else {
         res.status(404).json({ message: 'No post exists with this id' });
       }
@@ -57,19 +57,42 @@ routes.delete(urlByPost, (req, res) => {
 
 // ADD POST
 routes.post(url, (req, res) => {
-    const post = req.body;
-    if(post.text && post.user_id){
-    dbPosts.insert(post)
-    .then(post => {
-        res.status(201).json(post)
-    })
-    .catch(() => {
+  const post = req.body;
+  if (post.text && post.user_id) {
+    dbPosts
+      .insert(post)
+      .then(post => {
+        res.status(201).json(post);
+      })
+      .catch(() => {
         res.status(500).json({ message: 'The post could not be added' });
       });
-    }
-    else {
-        res.status(404).json({ message: 'Please supply a post text and user id' });
-    }
-})
+  } else {
+    res.status(404).json({ message: 'Please supply a post text and user id' });
+  }
+});
+
+// UPDATE POST
+routes.put(urlByPost, (req, res) => {
+  const { id } = req.params;
+  const post = req.body;
+  if (post.text || post.user_id) {
+    dbPosts.update(id, post)
+      .then(count => {
+        if (count) {
+          res.status(200).json({ message: 'Post succesffuly updated' });
+        } else {
+          res.status(404).json({ message: 'This post does not exist' });
+        }
+      })
+      .catch(() => {
+        res.status(500).json({ message: 'The post could not be updated' });
+      });
+  } else {
+    res
+      .status(404)
+      .json({ message: 'Please supply an updated post text or user id' });
+  }
+});
 
 module.exports = routes;
