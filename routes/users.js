@@ -1,7 +1,7 @@
 const express = require('express');
 const routes = express.Router();
 
-const db = require('../data/helpers/userDb');
+const dbUsers = require('../data/helpers/userDb');
 const { formatName } = require('../middleware');
 
 const url = '/api/users';
@@ -12,7 +12,7 @@ routes.use(express.json());
 
 // GET ALL USERS
 routes.get(url, (req, res) => {
-  db.get()
+  dbUsers.get()
     .then(users => {
       res.status(200).json(users);
     })
@@ -24,7 +24,7 @@ routes.get(url, (req, res) => {
 // GET SPECIFIC USERS BY ID
 routes.get(urlByUser, (req, res) => {
   const { id } = req.params;
-  db.getById(id)
+  dbUsers.getById(id)
     .then(user => {
       if (user) {
         res.status(200).json(user);
@@ -40,7 +40,7 @@ routes.get(urlByUser, (req, res) => {
 // GET ALL POSTS BY A USER
 routes.get(postsByUser, (req, res) => {
   const { id } = req.params;
-  db.getUserPosts(id)
+  dbUsers.getUserPosts(id)
     .then(posts => {
       if (posts.length > 0) {
         res.status(200).json(posts);
@@ -56,9 +56,9 @@ routes.get(postsByUser, (req, res) => {
 // ADD USER
 routes.post(url, formatName, (req, res) => {
   const user = req.body;
-  db.insert(user)
+  dbUsers.insert(user)
     .then(newUser => {
-      res.status(200).json(newUser);
+      res.status(201).json(newUser);
     })
     .catch(() => {
       res.status(500).json({ message: 'The user could not be added' });
@@ -68,7 +68,7 @@ routes.post(url, formatName, (req, res) => {
 // DELETE USER
 routes.delete(urlByUser, (req, res) => {
   const { id } = req.params;
-  db.remove(id)
+  dbUsers.remove(id)
     .then(count => {
       if (count) {
         res.status(200).json({ message: 'User successfully deleted' });
@@ -87,7 +87,7 @@ routes.put(urlByUser, (req, res) => {
   const user = req.body;
 
   if (user.name) {
-    db.update(id, user)
+    dbUsers.update(id, user)
       .then(count => {
         if (count) {
           res.status(200).json({ message: 'User successfully updated' });
